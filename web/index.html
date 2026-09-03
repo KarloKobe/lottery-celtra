@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Celtra Lottery</title>
+
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+    <div id="lottery-widget">
+        <h1>Lottery</h1>
+
+        <div id="countdown">
+            Loading...
+        </div>
+
+        <div id="results">
+            <h2>Previous results</h2>
+        </div>
+
+        <form id="entry-form">
+            <input
+                id="name"
+                type="text"
+                placeholder="Your name"
+            >
+
+            <input
+                id="guess"
+                type="number"
+                min="1"
+                max="30"
+                placeholder="1-30"
+            >
+
+            <button type="submit">
+                Enter raffle
+            </button>
+        </form>
+        <p id="form-message"></p>
+    </div>
+
+    <script src="/lottery.js"></script>
+</body>
+</html>

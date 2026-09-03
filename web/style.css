@@ -1,0 +1,17 @@
+body {
+    font-family: Arial, sans-serif;
+}
+
+#lottery-widget {
+    max-width: 500px;
+    margin: 50px auto;
+}
+
+#countdown {
+    font-size: 32px;
+    margin-bottom: 30px;
+}
+
+#results {
+    margin-bottom: 30px;
+}
