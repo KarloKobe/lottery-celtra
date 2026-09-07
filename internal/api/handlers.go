@@ -24,6 +24,11 @@ func NewHandler(service *lottery.Service) *Handler {
 }
 
 func (h *Handler) CreateEntry(w http.ResponseWriter, r *http.Request) {
+	// if r.Method != http.MethodPost {
+	// 	http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+	// 	return
+	// }
+
 	var request EntryRequest
 
 	err := json.NewDecoder(r.Body).Decode(&request)
@@ -47,6 +52,11 @@ func (h *Handler) CreateEntry(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) GetState(w http.ResponseWriter, r *http.Request) {
+	// if r.Method != http.MethodGet {
+	// 	http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+	// 	return
+	// }
+
 	raffle, err := database.GetActiveRaffle(h.Service.DB)
 	if err != nil {
 		http.Error(w, "Failed to get raffle", http.StatusInternalServerError)
@@ -66,6 +76,11 @@ func (h *Handler) GetState(w http.ResponseWriter, r *http.Request) {
 	})
 }
 func (h *Handler) GetResults(w http.ResponseWriter, r *http.Request) {
+	// if r.Method != http.MethodGet {
+	// 	http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+	// 	return
+	// }
+
 	results, err := database.GetLatestResults(h.Service.DB)
 	if err != nil {
 		http.Error(w, "Failed to get results", http.StatusInternalServerError)

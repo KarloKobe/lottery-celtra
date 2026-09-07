@@ -4,13 +4,18 @@ import (
 	"celtra-lottery/models"
 	"database/sql"
 	"fmt"
+	"os"
 	"time"
 
 	_ "modernc.org/sqlite"
 )
 
 func Connect() (*sql.DB, error) {
-	db, err := sql.Open("sqlite", "database.db")
+	if err := os.MkdirAll("data", 0755); err != nil {
+		return nil, err
+	}
+
+	db, err := sql.Open("sqlite", "data/database.db")
 	if err != nil {
 		return nil, err
 	}

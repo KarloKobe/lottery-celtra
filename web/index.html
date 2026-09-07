@@ -3,45 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Celtra Lottery</title>
 
     <link rel="stylesheet" href="/style.css">
 </head>
 <body>
 
-    <div id="lottery-widget">
+    <div class="lottery-widget">
+
         <h1>Lottery</h1>
 
-        <div id="countdown">
+        <div class="countdown">
             Loading...
         </div>
 
-        <div id="results">
-            <h2>Previous results</h2>
+        <div class="lottery-content">
+
+            <div class="results">
+                <h2>Previous results</h2>
+            </div>
+
+            <div class="entry-section">
+
+                <form class="entry-form">
+                    <input
+                        class="name-input"
+                        type="text"
+                        placeholder="Your name"
+                    >
+
+                    <input
+                        class="guess-input"
+                        type="number"
+                        min="1"
+                        max="30"
+                        placeholder="1-30"
+                    >
+
+                    <button type="submit">
+                        Enter raffle
+                    </button>
+                </form>
+
+                <p class="form-message"></p>
+
+            </div>
+
         </div>
 
-        <form id="entry-form">
-            <input
-                id="name"
-                type="text"
-                placeholder="Your name"
-            >
-
-            <input
-                id="guess"
-                type="number"
-                min="1"
-                max="30"
-                placeholder="1-30"
-            >
-
-            <button type="submit">
-                Enter raffle
-            </button>
-        </form>
-        <p id="form-message"></p>
     </div>
 
     <script src="/lottery.js"></script>
+
 </body>
 </html>

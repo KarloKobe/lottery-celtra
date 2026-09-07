@@ -1,17 +1,116 @@
 body {
+    margin: 0;
+    padding: 20px;
     font-family: Arial, sans-serif;
+    background: #f4f4f4;
 }
 
-#lottery-widget {
-    max-width: 500px;
-    margin: 50px auto;
+.lottery-widget {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 24px;
+    background: white;
+    border-radius: 12px;
+    box-sizing: border-box;
 }
 
-#countdown {
-    font-size: 32px;
-    margin-bottom: 30px;
+.lottery-widget h1 {
+    margin-top: 0;
+    text-align: center;
 }
 
-#results {
-    margin-bottom: 30px;
+.countdown {
+    font-size: 36px;
+    font-weight: bold;
+    text-align: center;
+    margin: 24px 0;
+}
+
+.lottery-content {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 220px;
+    gap: 24px;
+    align-items: start;
+}
+
+.results {
+    width: 100%;
+    max-height: 220px;
+    overflow-y: auto;
+}
+
+.results h2 {
+    margin-top: 0;
+}
+
+.result-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    padding: 14px 0;
+    border-bottom: 1px solid #ddd;
+}
+
+.result-winners {
+    flex: 1;
+}
+
+.result-number {
+    font-size: 20px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.entry-section {
+    width: 100%;
+}
+
+.entry-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.entry-form input,
+.entry-form button {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+.entry-form button {
+    cursor: pointer;
+}
+
+.form-message {
+    min-height: 20px;
+    margin-bottom: 0;
+}
+
+@media (max-width: 600px) {
+    body {
+        padding: 10px;
+    }
+
+    .lottery-widget {
+        padding: 16px;
+    }
+
+    .countdown {
+        font-size: 28px;
+    }
+
+    .lottery-content {
+        grid-template-columns: 1fr;
+    }
+
+    .results {
+        margin-bottom: 24px;
+    }
+
+    .entry-section {
+        width: 100%;
+    }
 }

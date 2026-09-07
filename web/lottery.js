@@ -1,149 +1,152 @@
-let countdownInterval = null;
+class LotteryWidget {
+    constructor(rootElement, apiUrl) {
+        this.root = rootElement;
+        this.apiUrl = apiUrl;
 
-async function loadState() {
-    try {
-        const response = await fetch("/api/state");
+        this.countdownInterval = null;
 
-        if (!response.ok) {
-            throw new Error("Failed to load raffle state");
+        this.countdownElement = this.root.querySelector(".countdown");
+        this.resultsElement = this.root.querySelector(".results");
+        this.form = this.root.querySelector(".entry-form");
+        this.nameInput = this.root.querySelector(".name-input");
+        this.guessInput = this.root.querySelector(".guess-input");
+        this.messageElement = this.root.querySelector(".form-message");
+
+        this.setupEntryForm();
+        this.loadState();
+        this.loadResults();
+    }
+
+    async loadState() {
+        try {
+            const response = await fetch(`${this.apiUrl}/state`);
+
+            if (!response.ok) {
+                throw new Error("Failed to load raffle state");
+            }
+
+            const state = await response.json();
+
+            this.startCountdown(state.endsAt);
+        } catch (error) {
+            console.error(error);
+            this.countdownElement.textContent = "Unable to load raffle";
+        }
+    }
+
+    startCountdown(endsAt) {
+        if (this.countdownInterval !== null) {
+            clearInterval(this.countdownInterval);
         }
 
-        const state = await response.json();
+        const updateCountdown = () => {
+            const now = new Date();
+            const end = new Date(endsAt);
 
-        startCountdown(state.endsAt);
-    } catch (error) {
-        console.error(error);
+            const difference = end - now;
 
-        document.getElementById("countdown").textContent =
-            "Unable to load raffle";
+            if (difference <= 0) {
+                this.countdownElement.textContent = "And the winner is...";
+
+                clearInterval(this.countdownInterval);
+                this.countdownInterval = null;
+
+                setTimeout(() => {
+                    this.loadState();
+                    this.loadResults();
+                }, 1000);
+
+                return;
+            }
+
+            const seconds = Math.ceil(difference / 1000);
+
+            this.countdownElement.textContent = `New winner in ${seconds}s...`;
+        };
+
+        updateCountdown();
+
+        this.countdownInterval = setInterval(updateCountdown, 1000);
     }
-}
 
-async function loadResults() {
-    try {
-        const response = await fetch("/api/results");
+    async loadResults() {
+        try {
+            const response = await fetch(`${this.apiUrl}/results`);
 
-        if (!response.ok) {
-            throw new Error("Failed to load results");
+            if (!response.ok) {
+                throw new Error("Failed to load results");
+            }
+
+            const results = await response.json();
+
+            this.renderResults(results);
+        } catch (error) {
+            console.error(error);
         }
-
-        const results = await response.json();
-
-        renderResults(results);
-    } catch (error) {
-        console.error(error);
     }
-}
 
-function renderResults(results) {
-    const resultsElement = document.getElementById("results");
+renderResults(results) {
+    this.resultsElement.innerHTML = "<h2>Previous results</h2>";
 
-    resultsElement.innerHTML = "<h2>Previous results</h2>";
-
-    results.forEach(result => {
+    results.forEach((result) => {
         const resultElement = document.createElement("div");
+        resultElement.classList.add("result-row");
 
-        let winnersText = "No winners";
+        let winnersText = "No lucky contestants";
 
-        if (result.Winners && result.Winners.length > 0) {
-            winnersText = result.Winners.join(", ");
+        if (result.winners && result.winners.length > 0) {
+            winnersText = result.winners.join(", ");
         }
 
         resultElement.innerHTML = `
-            <p>
-                Winning number: <strong>${result.WinningNumber}</strong><br>
-                Winners: ${winnersText}
-            </p>
+            <span class="result-winners">${winnersText}</span>
+            <span class="result-number">#${result.winningNumber}</span>
         `;
 
-        resultsElement.appendChild(resultElement);
+        this.resultsElement.appendChild(resultElement);
     });
 }
 
-function startCountdown(endsAt) {
-    const countdownElement = document.getElementById("countdown");
+    setupEntryForm() {
+        this.form.addEventListener("submit", async (event) => {
+            event.preventDefault();
 
-    if (countdownInterval !== null) {
-        clearInterval(countdownInterval);
-    }
+            const name = this.nameInput.value.trim();
+            const guess = Number(this.guessInput.value);
 
-    function updateCountdown() {
-        const now = new Date();
-        const end = new Date(endsAt);
+            this.messageElement.textContent = "";
 
-        const difference = end - now;
+            try {
+                const response = await fetch(`${this.apiUrl}/entries`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        name: name,
+                        guess: guess
+                    })
+                });
 
-        if (difference <= 0) {
-            countdownElement.textContent = "0";
+                if (!response.ok) {
+                    const errorMessage = await response.text();
+                    throw new Error(errorMessage);
+                }
 
-            clearInterval(countdownInterval);
-            countdownInterval = null;
+                this.messageElement.textContent = "Entry submitted!";
 
-            setTimeout(() => {
-                loadState();
-                loadResults();
-            }, 1000);
-
-            return;
-        }
-
-        const seconds = Math.ceil(difference / 1000);
-
-        countdownElement.textContent = seconds;
-    }
-
-    updateCountdown();
-
-    countdownInterval = setInterval(updateCountdown, 1000);
-}
-
-function setupEntryForm() {
-    const form = document.getElementById("entry-form");
-    const nameInput = document.getElementById("name");
-    const guessInput = document.getElementById("guess");
-    const messageElement = document.getElementById("form-message");
-
-    form.addEventListener("submit", async (event) => {
-        event.preventDefault();
-
-        const name = nameInput.value.trim();
-        const guess = Number(guessInput.value);
-
-        messageElement.textContent = "";
-
-        try {
-            const response = await fetch("/api/entries", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    name: name,
-                    guess: guess
-                })
-            });
-
-            if (!response.ok) {
-                const errorMessage = await response.text();
-                throw new Error(errorMessage);
+                this.nameInput.value = "";
+                this.guessInput.value = "";
+            } catch (error) {
+                this.messageElement.textContent = error.message;
+                console.error(error);
             }
-
-            messageElement.textContent = "Entry submitted!";
-
-            nameInput.value = "";
-            guessInput.value = "";
-        } catch (error) {
-            messageElement.textContent = error.message;
-            console.error(error);
-        }
-    });
+        });
+    }
 }
 
-loadState();
-loadResults();
-setupEntryForm();
+const widgetElements = document.querySelectorAll(".lottery-widget");
 
-new LotteryWidget(
-    document.getElementById("lottery-widget"),
-    "/api"
-);
+widgetElements.forEach((element) => {
+    new LotteryWidget(element, "/api");
+});
