@@ -17,7 +17,6 @@ type Entry struct {
 	CreatedAt time.Time `json:"createdAt"`
 }
 
-// rabs za get
 type Result struct {
 	RaffleID      int64     `json:"raffleId"`
 	WinningNumber int       `json:"winningNumber"`
