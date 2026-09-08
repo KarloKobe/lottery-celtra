@@ -4,6 +4,7 @@ class LotteryWidget {
         this.apiUrl = apiUrl;
 
         this.countdownInterval = null;
+        this.stateRetryTimeout = null;
 
         this.countdownElement = this.root.querySelector(".countdown");
         this.resultsElement = this.root.querySelector(".results");
@@ -30,7 +31,14 @@ class LotteryWidget {
             this.startCountdown(state.endsAt);
         } catch (error) {
             console.error(error);
-            this.countdownElement.textContent = "Unable to load raffle";
+            this.countdownElement.textContent = "Waiting for next raffle...";
+
+            if (this.stateRetryTimeout === null) {
+                this.stateRetryTimeout = setTimeout(() => {
+                    this.stateRetryTimeout = null;
+                    this.loadState();
+                }, 2000);
+            }
         }
     }
 
@@ -98,10 +106,15 @@ renderResults(results) {
             winnersText = result.winners.join(", ");
         }
 
-        resultElement.innerHTML = `
-            <span class="result-winners">${winnersText}</span>
-            <span class="result-number">#${result.winningNumber}</span>
-        `;
+        const winnersElement = document.createElement("span");
+        winnersElement.className = "result-winners";
+        winnersElement.textContent = winnersText;
+
+        const numberElement = document.createElement("span");
+        numberElement.className = "result-number";
+        numberElement.textContent = `#${result.winningNumber}`;
+
+        resultElement.append(winnersElement, numberElement);
 
         this.resultsElement.appendChild(resultElement);
     });

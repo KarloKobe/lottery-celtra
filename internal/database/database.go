@@ -191,7 +191,7 @@ func GetLatestResults(db *sql.DB) ([]models.Result, error) {
 	}
 	defer rows.Close()
 
-	var results []models.Result
+	results := []models.Result{}
 
 	for rows.Next() {
 		var result models.Result
